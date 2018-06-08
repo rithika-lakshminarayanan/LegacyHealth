@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="45dp"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:orientation="vertical">
+    <ImageView
+        android:id="@+id/symptom"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"/>
+
+    <TextView
+        android:id="@+id/symptom_name"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/symptom"
+        android:fontFamily="@font/lato_regular"
+        android:textSize="9sp"
+        android:textColor="#0095a4"/>
+
+</LinearLayout>

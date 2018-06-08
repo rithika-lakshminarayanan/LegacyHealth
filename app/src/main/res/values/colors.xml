@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#11b0c0</color>
+    <color name="colorPrimaryDark">#11b0c0</color>
+    <color name="hintcolor">#4a4a4a</color>
+    <color name="editTextBorder">#d0d0d0</color>
+    <color name="colorAccent">#ffffff</color>
+    <color name="app_button_blue">#0095a4</color>
+    <color name="unpressed_btn">#cceaed</color>
+    <color name="border_color">#74d4de</color>
+    <color name="white">#ffffff</color>
+    <color name="map_marker_blue">#0095a4</color>
+    <color name="dialog_buttons_blue">#0076ff</color>
+    <color name="orange_info">#ed7f00</color>
+</resources>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:background="@color/white"
+        tools:context="com.photon.legacyhealth.MainActivity">
+
+        <com.photon.legacyhealth.PresetRadioGroup
+            android:id="@+id/preset_time_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_margin="0dp"
+            android:layout_marginBottom="13dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:presetRadioCheckedId="@+id/preset_time_value_button_30">
+
+            <com.photon.legacyhealth.PresetValueButton
+                android:id="@+id/preset_time_value_button_30"
+                style="@style/PresetLayoutButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:presetButtonValueText="Feeling" />
+
+            <com.photon.legacyhealth.PresetValueButton
+                android:id="@+id/preset_time_value_button_60"
+                style="@style/PresetLayoutButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:presetButtonValueText="Doing" />
+        </com.photon.legacyhealth.PresetRadioGroup>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/zipcode"
+        android:layout_below="@id/preset_time_radio_group"
+        android:hint="@string/ziptext"
+        android:fontFamily="@font/lato_light"
+        android:textSize="14sp"
+        android:textColorHint="@color/hintcolor"
+        android:paddingLeft="12.5dp"/>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_below="@id/zipcode"
+        android:layout_height="match_parent">
+    </FrameLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_recycler_view"
+        android:layout_width="wrap_content"
+        android:background="@drawable/rounded_corner"
+        android:layout_below="@id/zipcode"
+        android:elevation="12dp"
+        android:outlineProvider="bounds"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="120dp"
+        android:orientation="vertical" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/info_box"
+        android:background="@color/orange_info"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="190dp"
+        android:fontFamily="@font/lato_regular"
+        android:padding="15dp"
+        android:text="Hello World"
+        android:textColor="#ffffff"/>
+    <ImageButton
+        android:id="@+id/cross_btn"
+        android:layout_width="8dp"
+        android:tint="#ffffff"
+        android:layout_height="8dp"
+        android:layout_marginTop="195dp"
+        android:layout_marginStart="210dp"
+        android:background="@drawable/cross"/>
+</RelativeLayout>
+
+
