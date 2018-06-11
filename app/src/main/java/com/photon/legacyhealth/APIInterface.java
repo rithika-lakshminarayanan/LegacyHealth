@@ -1,9 +1,9 @@
 package com.photon.legacyhealth;
 
+import com.photon.legacyhealth.pojo.FeelingTips;
 import com.photon.legacyhealth.pojo.FeelingsData;
 import com.photon.legacyhealth.pojo.MetaDataResponse;
 import com.photon.legacyhealth.pojo.NeighborhoodData;
-import com.photon.legacyhealth.pojo.NeighborhoodDataResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -16,4 +16,6 @@ public interface APIInterface {
     Call<NeighborhoodData> neighborhood(@Query("lat") String latitude, @Query("lon") String longitude);
     @GET("feelings")
     Call<FeelingsData> feelings(@Query("lat") String latitude, @Query("lon") String longitude, @Query("feelingIds") int id);
+    @GET("feelings/{feelingId}")
+    Call<FeelingTips> feelingTips(@Query("feelingId") int id);
 }

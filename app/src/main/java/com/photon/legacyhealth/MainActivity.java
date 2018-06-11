@@ -29,16 +29,19 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.photon.legacyhealth.pojo.CoordinatesFeelings;
+import com.photon.legacyhealth.pojo.FeelingTips;
 import com.photon.legacyhealth.pojo.FeelingsData;
 import com.photon.legacyhealth.pojo.FeelingsResponse;
 import com.photon.legacyhealth.pojo.MetaData;
 import com.photon.legacyhealth.pojo.MetaDataResponse;
+import com.photon.legacyhealth.pojo.Tips;
 
 import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Query;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
@@ -46,7 +49,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     SharedPreferences sharedpreferences;
     private RecyclerView recyclerView;
     private FeelingAdapter mAdapter;
+    private ArrayList<MetaData> md;
+    private Tips tip;
     private RecyclerView rView;
+    private int curSymptomPosition;
     private GoogleMap mMap;
     private String tabPressed;
     private ArrayList<FeelingsResponse> allFeelingsData;
@@ -70,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        curSymptomPosition=2;
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         String rText;
         if(isLocationSupported) {
@@ -143,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onItemClick(int position, View v) {
                 Log.i("ItemClicked", " Clicked on Item " + position);
-
+                curSymptomPosition=position;
                mAdapter.changeImage(position);
                mMap.clear();
                getFeelings(position+1);
@@ -224,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 MetaDataResponse resource = response.body();
 //                TO DO: Add those values to arraylist of Feeling type that have key="feeling"
-                ArrayList<MetaData> md=resource.getResponseData().getMetadata();
+                md=resource.getResponseData().getMetadata();
                 int len=md.size();
                 for(int i=0;i<len;i++){
                     if(md.get(i).getKey().equalsIgnoreCase("feeling")) {
@@ -246,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         LatLng home=new LatLng(latitude, longitude);
-        float zoom=11;
+        float zoom=10;
         if(!hasDialogBoxOpened) {
             getFeelings(3);
         }
@@ -274,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 if (mMap != null) {
                                     Circle circle = mMap.addCircle(new CircleOptions()
                                             .center(new LatLng(Float.parseFloat(coordinatesData.get(k).getLat()), Float.parseFloat(coordinatesData.get(k).getLon())))
-                                            .radius(1000)
+                                            .radius(1500)
                                             .strokeColor(Color.TRANSPARENT)
                                             .fillColor(Color.parseColor("#400095a4")).clickable(true));
                                     infoBox.setVisibility(View.VISIBLE);
@@ -299,5 +306,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             });
         }
+    }
+
+    public void getTip(int feelingId){
+        Call<FeelingTips> TipResponse=apiInterface.feelingTips(feelingId);
+        TipResponse.enqueue(new Callback<FeelingTips>() {
+            @Override
+            public void onResponse(Call<FeelingTips> call, Response<FeelingTips> response) {
+                FeelingTips resource=response.body();
+                tip=resource.getResponseData().getTips().get(0);
+            }
+
+            @Override
+            public void onFailure(Call<FeelingTips> call, Throwable t) {
+                call.cancel();
+            }
+        });
     }
 }
