@@ -28,6 +28,9 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.Gradient;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.photon.legacyhealth.pojo.CoordinatesFeelings;
 import com.photon.legacyhealth.pojo.FeelingTips;
 import com.photon.legacyhealth.pojo.FeelingsData;
@@ -41,7 +44,6 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Query;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RecyclerView recyclerView;
     private FeelingAdapter mAdapter;
     private ArrayList<MetaData> md;
+    private ArrayList<LatLng> coordinatesFeeling;
     private Tips tip;
     private RecyclerView rView;
     private int curSymptomPosition;
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        coordinatesFeeling=new ArrayList<>();
         curSymptomPosition=2;
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         String rText;
@@ -154,8 +158,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                mAdapter.changeImage(position);
                mMap.clear();
                getFeelings(position+1);
-               infoBox.setVisibility(View.VISIBLE);
-               crsBtn.setVisibility(View.VISIBLE);
+               getTip(position+1);
+               /*infoBox.setVisibility(View.VISIBLE);
+               crsBtn.setVisibility(View.VISIBLE);*/
 
             }
         }));
@@ -262,6 +267,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void getFeelings(int position) {
         if (isLocationSupported) {
+            if(!coordinatesData.isEmpty())
+                coordinatesData.clear();
+            if(!coordinatesFeeling.isEmpty())
+                coordinatesFeeling.clear();
             Call<FeelingsData> feelingsResponse = apiInterface.feelings(String.valueOf(latitude), String.valueOf(longitude), position);
             feelingsResponse.enqueue(new Callback<FeelingsData>() {
                 @Override
@@ -277,25 +286,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 }
                             }
 
-                            for (int k = 0; k < coordinatesData.size(); k++) {
-                                if (mMap != null) {
-                                    Circle circle = mMap.addCircle(new CircleOptions()
-                                            .center(new LatLng(Float.parseFloat(coordinatesData.get(k).getLat()), Float.parseFloat(coordinatesData.get(k).getLon())))
-                                            .radius(1500)
-                                            .strokeColor(Color.TRANSPARENT)
-                                            .fillColor(Color.parseColor("#400095a4")).clickable(true));
-                                    infoBox.setVisibility(View.VISIBLE);
-                                    crsBtn.setVisibility(View.VISIBLE);
-                                    mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
 
-                                        @Override
-                                        public void onCircleClick(Circle circle) {
-                                            infoBox.setVisibility(View.VISIBLE);
-                                            crsBtn.setVisibility(View.VISIBLE);
-                                        }
-                                    });
-                                }
+
+                           for (int k = 0; k < coordinatesData.size(); k++) {
+                             double latitude=Float.parseFloat(coordinatesData.get(k).getLat());
+                             double longitude=Float.parseFloat(coordinatesData.get(k).getLon());
+                             coordinatesFeeling.add(new LatLng(latitude,longitude));
                             }
+
+                            int[] colors = {
+                                    Color.argb(160,0,149,164)    /*.rgb(0, 149, 164), // blue*/
+                            };
+
+                            float[] startPoints = {
+                                    0.2f
+                            };
+
+                            Gradient gradient = new Gradient(colors, startPoints);
+
+// Create the tile provider.
+
+                            HeatmapTileProvider provider;
+                            provider = new HeatmapTileProvider.Builder()
+                                    .data(coordinatesFeeling)
+                                    .gradient(gradient)
+                                    .build();
+                            provider.setRadius(50);
+                            // Add a tile overlay to the map, using the heat map tile provider.
+                            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(provider));
                         }
                     }
                 }

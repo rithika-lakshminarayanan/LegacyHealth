@@ -1,8 +1,8 @@
 package com.photon.legacyhealth.pojo;
 
 public class Tips {
-    String message;
-    String url;
+    private String message;
+    private String url;
 
     public String getMessage() {
         return message;

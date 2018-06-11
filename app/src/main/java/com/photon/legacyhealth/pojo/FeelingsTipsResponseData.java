@@ -3,8 +3,9 @@ package com.photon.legacyhealth.pojo;
 import java.util.ArrayList;
 
 public class FeelingsTipsResponseData {
-    String alerts;
-    String push;
+    private String alerts;
+    private String push;
+    private ArrayList<Tips> tips;
 
     public String getAlerts() {
         return alerts;
@@ -30,5 +31,5 @@ public class FeelingsTipsResponseData {
         this.tips = tips;
     }
 
-    ArrayList<Tips> tips;
+
 }

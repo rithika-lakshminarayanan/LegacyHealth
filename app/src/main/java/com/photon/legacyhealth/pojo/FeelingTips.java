@@ -1,8 +1,9 @@
 package com.photon.legacyhealth.pojo;
 
 public class FeelingTips {
-    String status;
-    String statusCode;
+    private String status;
+    private String statusCode;
+    private FeelingsTipsResponseData responseData;
 
     public String getStatus() {
         return status;
@@ -28,5 +29,5 @@ public class FeelingTips {
         this.responseData = responseData;
     }
 
-    FeelingsTipsResponseData responseData;
+
 }
