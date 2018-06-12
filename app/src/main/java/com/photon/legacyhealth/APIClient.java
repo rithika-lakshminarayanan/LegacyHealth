@@ -16,7 +16,7 @@ public class APIClient {
 
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("https://dev-servicesprojectlovejoy.legacyhealth.org/legacyhealth/")
+                .baseUrl("https://59169j0z5l.execute-api.us-west-2.amazonaws.com/qa/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();

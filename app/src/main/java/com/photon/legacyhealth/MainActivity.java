@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -50,11 +51,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     SharedPreferences sharedpreferences;
     private RecyclerView recyclerView;
+    private RecyclerView rViewFeedback;
     private FeelingAdapter mAdapter;
+    private FeelingFeedbackAdapter fAdapter;
+    private FeelingFeedback ff;
     private ArrayList<MetaData> md;
+    private ArrayList<FeelingFeedback> ffList;
     private ArrayList<LatLng> coordinatesFeeling;
     private Tips tip;
-    private RecyclerView rView;
     private int curSymptomPosition;
     private GoogleMap mMap;
     private String tabPressed;
@@ -79,6 +83,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        TextView title= (TextView) findViewById(R.id.toolbar_title);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         coordinatesFeeling=new ArrayList<>();
         curSymptomPosition=2;
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
@@ -90,10 +98,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             rText="Stumptown";
         latitude=Float.parseFloat(sharedpreferences.getString("latitude",""));
         longitude=Float.parseFloat(sharedpreferences.getString("longitude",""));
-        if(!rText.isEmpty())
-            setTitle(rText);
-        else
-            setTitle("Stumptown");
+        title.setText(rText);
+
         infoBox=findViewById(R.id.info_box);
         crsBtn=findViewById(R.id.cross_btn);
         infoBox.setVisibility(View.GONE);
@@ -137,16 +143,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .show();
         }
 //        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         recyclerView=(RecyclerView)findViewById(R.id.my_recycler_view) ;
         recyclerView.setHasFixedSize(true);
+//        recyclerView.setVisibility(View.VISIBLE);
+
+        rViewFeedback=findViewById(R.id.feeling_feedback);
 
         apiInterface = APIClient.getClient().create(APIInterface.class);
+        ffList=new ArrayList<>();
         fl=new ArrayList<>();
+
         populateFeelingsList();
+
         mAdapter = new FeelingAdapter(fl);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
-//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new MyDividerItemDecoration(this, LinearLayoutManager.VERTICAL, 16));
         recyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
@@ -154,16 +167,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onItemClick(int position, View v) {
                 Log.i("ItemClicked", " Clicked on Item " + position);
-                curSymptomPosition=position;
-               mAdapter.changeImage(position);
-               mMap.clear();
-               getFeelings(position+1);
-               getTip(position+1);
+                if(curSymptomPosition==position) {
+                    mAdapter.changeImage(position);
+                    mMap.clear();
+                }
+                else {
+                    curSymptomPosition = position;
+                    mAdapter.changeImage(position);
+                    mMap.clear();
+                    getFeelings(position + 1);
+                }
+//                getTip(position+1);
                /*infoBox.setVisibility(View.VISIBLE);
                crsBtn.setVisibility(View.VISIBLE);*/
 
             }
         }));
+
+        fAdapter=new FeelingFeedbackAdapter(ffList);
+        RecyclerView.LayoutManager fLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL, false);
+        rViewFeedback.setLayoutManager(fLayoutManager);
+        rViewFeedback.setAdapter(fAdapter);
+        fAdapter.notifyDataSetChanged();
+//
 
         secondFragment = new TwoFragment();
 
@@ -228,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         /*
          GET List Resources
          */
+
         Call<MetaDataResponse> metadataResponse = apiInterface.metadata();
         metadataResponse.enqueue(new Callback<MetaDataResponse>() {
             @Override
@@ -243,6 +270,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         f = new Feeling(md.get(i).getImgUrl(), md.get(i).getName(), md.get(i).getImgSelUrl());
                         fl.add(f);
                     }
+                    else
+                        if(md.get(i).getKey().equalsIgnoreCase("symptom")){
+                          ff = new FeelingFeedback(md.get(i).getImgUrl(),md.get(i).getName());
+                          ffList.add(ff);
+                        }
                 }
                 int flen=fl.size();
             }
@@ -265,7 +297,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, zoom));
     }
 
-    public void getFeelings(int position) {
+    public void getFeelings(final int position) {
+
         if (isLocationSupported) {
             if(!coordinatesData.isEmpty())
                 coordinatesData.clear();
@@ -280,11 +313,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         allFeelingsData = resource.getResponseData().getFeelings();
                         if (allFeelingsData != null) {
                             int alLen = allFeelingsData.size();
-                            for (int i = 0; i < alLen; i++) {
-                                for (int j = 0; j < allFeelingsData.get(i).getCoordinates().size(); j++) {
-                                    coordinatesData.add(allFeelingsData.get(i).getCoordinates().get(j));
+                                for (int j = 0; j < allFeelingsData.get(position-1).getCoordinates().size(); j++) {
+                                    coordinatesData.add(allFeelingsData.get(position-1).getCoordinates().get(j));
                                 }
-                            }
+
 
 
 
@@ -299,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             };
 
                             float[] startPoints = {
-                                    0.2f
+                                    0.009f
                             };
 
                             Gradient gradient = new Gradient(colors, startPoints);
@@ -307,11 +339,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 // Create the tile provider.
 
                             HeatmapTileProvider provider;
-                            provider = new HeatmapTileProvider.Builder()
-                                    .data(coordinatesFeeling)
-                                    .gradient(gradient)
-                                    .build();
-                            provider.setRadius(50);
+                            provider = new HeatmapTileProvider.Builder().data(coordinatesFeeling).gradient(gradient).build();
+                            provider.setRadius(30);
                             // Add a tile overlay to the map, using the heat map tile provider.
                             mMap.addTileOverlay(new TileOverlayOptions().tileProvider(provider));
                         }
@@ -326,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void getTip(int feelingId){
+/*    public void getTip(int feelingId){
         Call<FeelingTips> TipResponse=apiInterface.feelingTips(feelingId);
         TipResponse.enqueue(new Callback<FeelingTips>() {
             @Override
@@ -340,5 +369,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 call.cancel();
             }
         });
-    }
+    }*/
 }

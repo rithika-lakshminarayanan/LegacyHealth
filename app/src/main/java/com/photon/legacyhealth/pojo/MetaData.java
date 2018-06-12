@@ -1,16 +1,45 @@
 package com.photon.legacyhealth.pojo;
 
 public class MetaData {
-    int id;
-    String name;
-    String key;
-    boolean isHighlited;
-    String imgUrl;
-    String imgSelUrl;
-    boolean hasSymptomMessage;
-    boolean hasCriticalMessage;
-    boolean hasCriteria;
-    String description;
+    private int id;
+    private String name;
+    private String key;
+    private boolean isHighlited  = false;
+    private String imgUrl;
+    private String imgSelUrl;
+    private String annotationUrl;
+    private int order;
+    private boolean hasSymptomMessage;
+    private boolean hasCriticalMessage;
+    private boolean hasCriteria;
+    private String description = "";
+    private int parentId;
+    private String doingFeedbackUrl;
+    private String listUrl;
+
+    public String getDoingFeedbackUrl() {
+        return doingFeedbackUrl;
+    }
+
+    public void setDoingFeedbackUrl(String doingFeedbackUrl) {
+        this.doingFeedbackUrl = doingFeedbackUrl;
+    }
+
+    public String getListUrl() {
+        return listUrl;
+    }
+
+    public void setListUrl(String listUrl) {
+        this.listUrl = listUrl;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
 
     public int getId() {
         return id;
@@ -26,6 +55,22 @@ public class MetaData {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAnnotationUrl() {
+        return annotationUrl;
+    }
+
+    public void setAnnotationUrl(String annotationUrl) {
+        this.annotationUrl = annotationUrl;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     public String getKey() {

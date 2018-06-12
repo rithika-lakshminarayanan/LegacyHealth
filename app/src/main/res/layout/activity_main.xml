@@ -1,4 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+    <android.support.design.widget.AppBarLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary">
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/lato_regular"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -35,7 +66,7 @@
                 android:layout_weight="1"
                 app:presetButtonValueText="Doing" />
         </com.photon.legacyhealth.PresetRadioGroup>
-    <EditText
+    <AutoCompleteTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/zipcode"
@@ -51,17 +82,18 @@
         android:layout_below="@id/zipcode"
         android:layout_height="match_parent">
     </FrameLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/my_recycler_view"
         android:layout_width="wrap_content"
         android:background="@drawable/rounded_corner"
-        android:layout_below="@id/zipcode"
         android:elevation="12dp"
         android:outlineProvider="bounds"
         android:layout_height="wrap_content"
         android:layout_marginLeft="350dp"
         android:layout_marginTop="120dp"
         android:orientation="vertical" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -72,15 +104,52 @@
         android:fontFamily="@font/lato_regular"
         android:padding="15dp"
         android:text="Hello World"
-        android:textColor="#ffffff"/>
+        android:textColor="@color/white"/>
     <ImageButton
         android:id="@+id/cross_btn"
         android:layout_width="8dp"
-        android:tint="#ffffff"
+        android:tint="@color/white"
         android:layout_height="8dp"
         android:layout_marginTop="195dp"
         android:layout_marginStart="210dp"
         android:background="@drawable/cross"/>
+
+    <!-- Footer aligned to bottom -->
+    <RelativeLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="127dp"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:background="@color/orange_info">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:id="@+id/crsbtn"
+            android:background="@drawable/cross"
+            android:backgroundTint="@color/white"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="How ya Feeling?"
+            android:id="@+id/disptxt"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/klinic_slab_medium"
+            android:textColor="@color/white"
+            android:textSize="24sp"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/feeling_feedback"
+            android:padding="15dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/disptxt"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent" />
+
+    </RelativeLayout>
+
 </RelativeLayout>
+</LinearLayout>
 
 
