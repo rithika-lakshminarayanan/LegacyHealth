@@ -21,6 +21,6 @@
         android:layout_toRightOf="@id/symptom"
         android:fontFamily="@font/lato_regular"
         android:textSize="14sp"
-        android:textColor="#ffffff"/>
+        android:textColor="@color/white"/>
 
 </LinearLayout>
