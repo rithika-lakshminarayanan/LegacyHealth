@@ -3,4 +3,23 @@
     <string name="google_maps_key">AIzaSyDYD2GTxjVqD6eubH_dz0le8L8pemipZv8</string>
     <string name="title_activity_maps">Map</string>
     <string name="ziptext">Enter zip code or neighborhood</string>
+    <string name="hello_world">Hello World</string>
+    <string name="how_ya_feeling">How ya Feeling?</string>
+    <string name="tab1_value">Feeling</string>
+    <string name="tab2_value">Doing</string>
+    <string name="stay_healthy">Stay Healthy,</string>
+    <string name="stumptown">Stumptown!</string>
+    <string name="powered_by">Powered by</string>
+    <string name="two">Two</string>
+    <string name="str_symptom">symptom</string>
+    <string name="str_feeling">feeling</string>
+    <string name="tab_feeling">Feeling</string>
+    <string name="tab_doing">Doing</string>
+    <string name="badge_default_value">0</string>
+    <string name="stumptown_mactivity">Stumptown</string>
+    <string name="too_far_away_dialog">Oh no! You are too far away. Want to check out our neighborhood?</string>
+    <string name="slideshow">Slideshow</string>
+    <string name="tools">Tools</string>
+    <string name="gallery">Gallery</string>
+    <string name="importt">Import</string>
 </resources>

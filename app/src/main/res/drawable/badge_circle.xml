@@ -1,0 +1,13 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid
+        android:color="#F00" />
+    <stroke
+        android:width="1dip"
+        android:color="#F00" />
+    <padding
+        android:left="3dip"
+        android:right="3dip"
+        android:top="3dip"
+        android:bottom="3dip" />
+</shape>

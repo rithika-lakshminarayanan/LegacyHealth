@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <group
+        android:id="@+id/menu_1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_camera"
+            android:title="@string/importt" />
+    </group>
+    <group
+        android:id="@+id/menu_2"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_gallery"
+            android:title="@string/gallery" />
+    </group>
+    <group
+        android:id="@+id/menu_3"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_slideshow"
+            android:title="@string/slideshow" />
+    </group>
+    <group
+        android:id="@+id/menu_4"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_manage"
+            android:title="@string/tools" />
+    </group>
+</menu>

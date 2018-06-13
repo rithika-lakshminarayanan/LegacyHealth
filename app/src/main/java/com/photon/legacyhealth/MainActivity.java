@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +19,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -78,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Feeling f;
     public static final String MyPREFERENCES = "MyPrefs" ;
     PresetRadioGroup mSetDurationPresetRadioGroup;
+    private int[] badgeValues={0,0,0};
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,18 +93,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         TextView title= (TextView) findViewById(R.id.toolbar_title);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        coordinatesFeeling=new ArrayList<>();
-        curSymptomPosition=2;
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);                                                    /* Add hamburger menu icon to action bar */
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         String rText;
         if(isLocationSupported) {
-            rText = sharedpreferences.getString("neighborhood", "");
+            rText = sharedpreferences.getString("neighborhood", "");                           /* Get the current location from sharedPreferences and set it as the title */
         }
         else
-            rText="Stumptown";
+            rText=getString(R.string.stumptown_mactivity);
         latitude=Float.parseFloat(sharedpreferences.getString("latitude",""));
         longitude=Float.parseFloat(sharedpreferences.getString("longitude",""));
         title.setText(rText);
+
+        coordinatesFeeling=new ArrayList<>();
+        curSymptomPosition=2;
+
+
 
         infoBox=findViewById(R.id.info_box);
         crsBtn=findViewById(R.id.cross_btn);
@@ -120,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             isLocationSupported=false;
             hasDialogBoxOpened=true;
             new AlertDialog.Builder(this,R.style.MyDialogTheme)
-                    .setMessage("Oh no! You are too far away. Want to check out our neighborhood?")
+                    .setMessage(R.string.too_far_away_dialog)
                     .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -187,8 +201,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         fAdapter=new FeelingFeedbackAdapter(ffList);
         RecyclerView.LayoutManager fLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL, false);
         rViewFeedback.setLayoutManager(fLayoutManager);
+//        rViewFeedback.getChildViewHolder().get
         rViewFeedback.setAdapter(fAdapter);
         fAdapter.notifyDataSetChanged();
+        fAdapter.setOnItemClickListener(new FeelingFeedbackAdapter.MyClickListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+                fAdapter.increaseBadgeCount(position,badgeValues[position]);
+                badgeValues[position]++;
+            }
+        });
+
 //
 
         secondFragment = new TwoFragment();
@@ -219,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onCheckedChanged(View radioGroup, View radioButton, boolean isChecked, int checkedId) {
                 tabPressed=((PresetValueButton) radioButton).getValue();
-                if (tabPressed.equalsIgnoreCase("Doing")) {
+                if (tabPressed.equalsIgnoreCase(getString(R.string.tab_doing))) {
                     if (isFirstFragment) {
                         FragmentManager fragmentManager = getFragmentManager();
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -233,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 }
                 else
-                if (tabPressed.equalsIgnoreCase("Feeling")) {
+                if (tabPressed.equalsIgnoreCase(getString(R.string.tab_feeling))) {
                     if (!isFirstFragment) {
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 // Replace whatever is in the fragment_container view with this fragment,
@@ -248,6 +271,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void populateFeelingsList(){                     /* Method to fetch feeling images and names using the API and populate the feelings arraylist */
@@ -266,12 +299,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 md=resource.getResponseData().getMetadata();
                 int len=md.size();
                 for(int i=0;i<len;i++){
-                    if(md.get(i).getKey().equalsIgnoreCase("feeling")) {
+                    if(md.get(i).getKey().equalsIgnoreCase(getString(R.string.str_feeling))) {
                         f = new Feeling(md.get(i).getImgUrl(), md.get(i).getName(), md.get(i).getImgSelUrl());
                         fl.add(f);
                     }
                     else
-                        if(md.get(i).getKey().equalsIgnoreCase("symptom")){
+                        if(md.get(i).getKey().equalsIgnoreCase(getString(R.string.str_symptom))){
                           ff = new FeelingFeedback(md.get(i).getImgUrl(),md.get(i).getName());
                           ffList.add(ff);
                         }

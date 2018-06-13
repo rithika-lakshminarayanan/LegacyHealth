@@ -41,4 +41,10 @@
         <item name="android:paddingRight">@dimen/padding_side_title_text</item>
     </style>
 
+    <style name="MyStyleDrawer" >
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/app_button_blue</item>
+        <item name="android:fontFamily">@font/lato_bold</item>
+    </style>
+
 </resources>

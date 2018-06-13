@@ -13,7 +13,7 @@
         android:fontFamily="@font/bernadette"
         android:lineSpacingExtra="6sp"
         android:rotation="-13"
-        android:text="Stay  Healthy,"
+        android:text="@string/stay_healthy"
         android:textColor="#ffffff"
         android:textSize="35sp" />
 
@@ -30,7 +30,7 @@
         android:maxLines="3"
         android:rotation="-13"
         android:singleLine="false"
-        android:text="Stumptown!"
+        android:text="@string/stumptown"
         android:textColor="#ffffff"
         android:textSize="32sp" />
     <TextView
@@ -41,6 +41,6 @@
         android:textSize="12sp"
         android:textColor="#ffffff"
         android:lineSpacingExtra="28sp"
-        android:text="Powered by"
+        android:text="@string/powered_by"
         />
 </RelativeLayout>
