@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="95dp"
-        android:layout_marginTop="185.3dp"
+        android:layout_marginTop="200.3dp"
         android:fontFamily="@font/bernadette"
         android:lineSpacingExtra="6sp"
         android:rotation="-13"
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="109.9dp"
-        android:layout_marginTop="245.4dp"
+        android:layout_marginTop="260.4dp"
         android:ellipsize="end"
         android:fontFamily="@font/bernadette"
         android:gravity="center_horizontal"
@@ -33,14 +33,4 @@
         android:text="@string/stumptown"
         android:textColor="#ffffff"
         android:textSize="32sp" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="578dp"
-        android:layout_marginLeft="113dp"
-        android:textSize="12sp"
-        android:textColor="#ffffff"
-        android:lineSpacingExtra="28sp"
-        android:text="@string/powered_by"
-        />
 </RelativeLayout>

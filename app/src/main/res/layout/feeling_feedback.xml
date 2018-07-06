@@ -9,12 +9,13 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:id="@+id/relLyt"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content">
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingRight="10dp"
-            android:paddingTop="7dp"
+            android:paddingTop="5dp"
             android:id="@+id/rel_lyt2">
             <ImageView
                 android:id="@+id/feeling_img"
@@ -39,6 +40,7 @@
         android:id="@+id/feeling_name"
         android:layout_width="wrap_content"
         android:textAlignment="center"
+        android:layout_marginTop="2dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/symptom"
         android:fontFamily="@font/lato_regular"

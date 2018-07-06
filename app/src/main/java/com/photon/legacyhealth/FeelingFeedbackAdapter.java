@@ -1,6 +1,5 @@
 package com.photon.legacyhealth;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import java.util.List;
 
 public class FeelingFeedbackAdapter extends RecyclerView.Adapter<FeelingFeedbackAdapter.MyViewHolder>{
-    private Context mContext;
     private List<FeelingFeedback> fList;
     private static FeelingFeedbackAdapter.MyClickListener myClickListener;
     private int[] badgeInitial={1,1,1};
@@ -45,8 +43,6 @@ public class FeelingFeedbackAdapter extends RecyclerView.Adapter<FeelingFeedback
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.feeling_feedback, parent, false);
-        /*RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        itemView.setLayoutParams(lp);*/
         return new MyViewHolder(itemView);
     }
 

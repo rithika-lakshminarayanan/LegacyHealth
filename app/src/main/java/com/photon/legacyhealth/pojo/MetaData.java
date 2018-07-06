@@ -1,6 +1,9 @@
 package com.photon.legacyhealth.pojo;
 
-public class MetaData {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class MetaData implements Parcelable{
     private int id;
     private String name;
     private String key;
@@ -16,6 +19,36 @@ public class MetaData {
     private int parentId;
     private String doingFeedbackUrl;
     private String listUrl;
+
+    protected MetaData(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        key = in.readString();
+        isHighlited = in.readByte() != 0;
+        imgUrl = in.readString();
+        imgSelUrl = in.readString();
+        annotationUrl = in.readString();
+        order = in.readInt();
+        hasSymptomMessage = in.readByte() != 0;
+        hasCriticalMessage = in.readByte() != 0;
+        hasCriteria = in.readByte() != 0;
+        description = in.readString();
+        parentId = in.readInt();
+        doingFeedbackUrl = in.readString();
+        listUrl = in.readString();
+    }
+
+    public static final Creator<MetaData> CREATOR = new Creator<MetaData>() {
+        @Override
+        public MetaData createFromParcel(Parcel in) {
+            return new MetaData(in);
+        }
+
+        @Override
+        public MetaData[] newArray(int size) {
+            return new MetaData[size];
+        }
+    };
 
     public String getDoingFeedbackUrl() {
         return doingFeedbackUrl;
@@ -135,5 +168,29 @@ public class MetaData {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeString(key);
+        dest.writeByte((byte) (isHighlited ? 1 : 0));
+        dest.writeString(imgUrl);
+        dest.writeString(imgSelUrl);
+        dest.writeString(annotationUrl);
+        dest.writeInt(order);
+        dest.writeByte((byte) (hasSymptomMessage ? 1 : 0));
+        dest.writeByte((byte) (hasCriticalMessage ? 1 : 0));
+        dest.writeByte((byte) (hasCriteria ? 1 : 0));
+        dest.writeString(description);
+        dest.writeInt(parentId);
+        dest.writeString(doingFeedbackUrl);
+        dest.writeString(listUrl);
     }
 }

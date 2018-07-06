@@ -1,32 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group
         android:id="@+id/menu_1"
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_camera"
-            android:title="@string/importt" />
+            android:title="@string/menu_item1"
+            app:actionLayout="@layout/right_caret"/>
     </group>
     <group
         android:id="@+id/menu_2"
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_gallery"
-            android:title="@string/gallery" />
+            android:title="@string/menu_item2"
+            app:actionLayout="@layout/right_caret"/>
     </group>
     <group
         android:id="@+id/menu_3"
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_slideshow"
-            android:title="@string/slideshow" />
+            android:title="@string/menu_item3"
+            app:actionLayout="@layout/insta_round"
+            />
     </group>
     <group
         android:id="@+id/menu_4"
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_manage"
-            android:title="@string/tools" />
+            android:title="@string/menu_item4"
+            app:actionLayout="@layout/right_caret"/>
+    </group>
+    <group
+        android:id="@+id/menu_5"
+        android:checkableBehavior="single">
+        <item android:id="@+id/nav_switch"
+            app:actionLayout="@layout/action_view_switch"
+            android:title="@string/push_notifications" />
     </group>
 </menu>

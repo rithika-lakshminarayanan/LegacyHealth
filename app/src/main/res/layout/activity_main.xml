@@ -14,11 +14,11 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:focusableInTouchMode="true"
             android:orientation="vertical">
             <android.support.design.widget.AppBarLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/app_bar_lyt"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent">
 
@@ -40,129 +40,43 @@
 
                 </android.support.v7.widget.Toolbar>
 
+
+                <android.support.design.widget.TabLayout
+                    android:layout_width="match_parent"
+                    android:id="@+id/tab_lyt"
+                    app:tabIndicatorHeight="0dp"
+                    app:tabBackground="@drawable/tab_color_selector"
+                    app:tabTextColor="@color/colorPrimary"
+                    app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
+                    app:tabSelectedTextColor="@color/unpressed_btn"
+                    app:tabMode="fixed"
+                    android:background="@drawable/background_shape_preset_button"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top" />
             </android.support.design.widget.AppBarLayout>
 
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:focusableInTouchMode="true"
                 android:clipToPadding="false"
                 android:background="@color/white"
+                android:orientation="vertical"
                 tools:context="com.photon.legacyhealth.MainActivity">
 
-                <com.photon.legacyhealth.PresetRadioGroup
-                    android:id="@+id/preset_time_radio_group"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_margin="0dp"
-                    android:layout_marginBottom="13dp"
-                    android:orientation="horizontal"
-                    android:weightSum="2"
-                    app:presetRadioCheckedId="@+id/preset_time_value_button_30">
-
-                    <com.photon.legacyhealth.PresetValueButton
-                        android:id="@+id/preset_time_value_button_30"
-                        style="@style/PresetLayoutButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:presetButtonValueText="@string/tab1_value" />
-
-                    <com.photon.legacyhealth.PresetValueButton
-                        android:id="@+id/preset_time_value_button_60"
-                        style="@style/PresetLayoutButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:presetButtonValueText="@string/tab2_value" />
-                </com.photon.legacyhealth.PresetRadioGroup>
-            <AutoCompleteTextView
+            <com.photon.legacyhealth.NonSwipeableViewPager
+                android:id="@+id/viewpager"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/zipcode"
-                android:layout_below="@id/preset_time_radio_group"
-                android:hint="@string/ziptext"
-                android:fontFamily="@font/lato_light"
-                android:textSize="14sp"
-                android:textColorHint="@color/hintcolor"
-                android:paddingLeft="12.5dp"/>
+                android:layout_height="wrap_content"/>
             <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/map"
                 android:layout_width="match_parent"
-                android:layout_below="@id/zipcode"
-                android:layout_height="match_parent">
-            </FrameLayout>
+                android:layout_height="match_parent" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/my_recycler_view"
-                android:layout_width="wrap_content"
-                android:background="@drawable/rounded_corner"
-                android:elevation="12dp"
-                android:outlineProvider="bounds"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="350dp"
-                android:layout_marginTop="120dp"
-                android:orientation="vertical" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/info_box"
-                android:background="@color/orange_info"
-                android:layout_marginStart="120dp"
-                android:layout_marginTop="190dp"
-                android:fontFamily="@font/lato_regular"
-                android:padding="15dp"
-                android:text="@string/hello_world"
-                android:textColor="@color/white"/>
-            <ImageButton
-                android:id="@+id/cross_btn"
-                android:layout_width="8dp"
-                android:tint="@color/white"
-                android:layout_height="8dp"
-                android:layout_marginTop="195dp"
-                android:layout_marginStart="210dp"
-                android:background="@drawable/cross"/>
-
-    <!-- Footer aligned to bottom -->
-            <RelativeLayout
-                android:id="@+id/footer"
-                android:layout_width="match_parent"
-                android:layout_height="130dp"
-                android:layout_alignParentBottom="true"
-                android:paddingLeft="15dp"
-                android:paddingTop="15dp"
-                android:background="@color/orange_info">
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/crsbtn"
-                    android:background="@drawable/cross"
-                    android:backgroundTint="@color/white"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/how_ya_feeling"
-                    android:id="@+id/disptxt"
-                    android:layout_centerHorizontal="true"
-                    android:fontFamily="@font/klinic_slab_medium"
-                    android:textColor="@color/white"
-                    android:textSize="24sp"/>
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/feeling_feedback"
-                    android:padding="13dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/disptxt"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent" />
-
-                </RelativeLayout>
-
-            </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
 
@@ -179,3 +93,5 @@
         app:itemTextColor="@color/map_marker_blue"/>
 
 </android.support.v4.widget.DrawerLayout>
+
+

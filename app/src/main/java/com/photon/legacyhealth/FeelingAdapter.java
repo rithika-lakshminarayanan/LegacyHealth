@@ -1,30 +1,16 @@
 package com.photon.legacyhealth;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.module.AppGlideModule;
-import com.bumptech.glide.request.target.Target;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.constraint.Constraints.TAG;
-
 public class FeelingAdapter extends RecyclerView.Adapter<FeelingAdapter.MyViewHolder> {
-    private Context mContext;
     private boolean firstLoad;
     private static MyClickListener myClickListener;
     private int prevfeeling=2;
@@ -40,7 +26,6 @@ public class FeelingAdapter extends RecyclerView.Adapter<FeelingAdapter.MyViewHo
             feeling = (TextView) view.findViewById(R.id.symptom_name);
             sym= (ImageView) view.findViewById(R.id.symptom);
         }
-
 
         @Override
         public void onClick(View v) {
@@ -64,13 +49,25 @@ public class FeelingAdapter extends RecyclerView.Adapter<FeelingAdapter.MyViewHo
     }
 
     public void changeImage(int index) {
-        feelings.get(index).setImageChanged(true);
-        if(prevfeeling!=-1) {
-            feelings.get(prevfeeling).setImageChanged(false);
-            notifyItemChanged(prevfeeling);
+        if(prevfeeling!=index) {
+            feelings.get(index).setImageChanged(true);
+            if (prevfeeling != -1) {
+                feelings.get(prevfeeling).setImageChanged(false);
+                notifyItemChanged(prevfeeling);
+            }
+            notifyItemChanged(index);
+            prevfeeling = index;
         }
-        notifyItemChanged(index);
-        prevfeeling=index;
+        else{
+            if(feelings.get(prevfeeling).isImageChanged()) {
+                feelings.get(prevfeeling).setImageChanged(false);
+                notifyItemChanged(prevfeeling);
+            }
+            else{
+                feelings.get(prevfeeling).setImageChanged(true);
+                notifyItemChanged(prevfeeling);
+            }
+        }
     }
 
     @Override
@@ -85,6 +82,7 @@ public class FeelingAdapter extends RecyclerView.Adapter<FeelingAdapter.MyViewHo
            if(position==2) {
             if(firstLoad) {
                 GlideApp.with(holder.itemView).load(feeling.getImgSelUrl()).fitCenter().placeholder(R.drawable.allergies).into(holder.sym);
+                feelings.get(2).setImageChanged(true);
                 firstLoad=false;
             }
             else
@@ -98,6 +96,7 @@ public class FeelingAdapter extends RecyclerView.Adapter<FeelingAdapter.MyViewHo
     public int getItemCount() {
         return feelings.size();
     }
+
     public interface MyClickListener {
         void onItemClick(int position, View v);
     }

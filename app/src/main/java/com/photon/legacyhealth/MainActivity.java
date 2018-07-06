@@ -1,48 +1,28 @@
 package com.photon.legacyhealth;
 
-
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.support.v4.app.FragmentTransaction;
+import android.graphics.Typeface;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.maps.android.heatmaps.Gradient;
-import com.google.maps.android.heatmaps.HeatmapTileProvider;
-import com.photon.legacyhealth.pojo.CoordinatesFeelings;
-import com.photon.legacyhealth.pojo.FeelingTips;
-import com.photon.legacyhealth.pojo.FeelingsData;
-import com.photon.legacyhealth.pojo.FeelingsResponse;
 import com.photon.legacyhealth.pojo.MetaData;
-import com.photon.legacyhealth.pojo.MetaDataResponse;
-import com.photon.legacyhealth.pojo.Tips;
+import com.photon.legacyhealth.pojo.NeighborhoodListData;
+import com.photon.legacyhealth.pojo.NeighborhoodListDataResponseData;
 
 import java.util.ArrayList;
 
@@ -51,46 +31,29 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class MainActivity extends AppCompatActivity {
 
-    SharedPreferences sharedpreferences;
-    private RecyclerView recyclerView;
-    private RecyclerView rViewFeedback;
-    private FeelingAdapter mAdapter;
-    private FeelingFeedbackAdapter fAdapter;
-    private FeelingFeedback ff;
-    private ArrayList<MetaData> md;
-    private ArrayList<FeelingFeedback> ffList;
-    private ArrayList<LatLng> coordinatesFeeling;
-    private Tips tip;
-    private int curSymptomPosition;
-    private GoogleMap mMap;
-    private String tabPressed;
-    private ArrayList<FeelingsResponse> allFeelingsData;
-    private ArrayList<CoordinatesFeelings> coordinatesData = new ArrayList<>();
-    private double latitude;
-    private TextView infoBox;
-    private ImageButton crsBtn;
-    private double longitude;
-    private boolean dialogBoxOk=false;
-    private boolean hasDialogBoxOpened=false;
-    private boolean isLocationSupported=true;
-    private APIInterface apiInterface;
-    private boolean isFirstFragment=true;
-    private TwoFragment secondFragment;
-    private ArrayList<Feeling> fl;
-    Feeling f;
-    public static final String MyPREFERENCES = "MyPrefs" ;
-    PresetRadioGroup mSetDurationPresetRadioGroup;
-    private int[] badgeValues={0,0,0};
+    private SharedPreferences sharedpreferences;
+    private boolean dialogBoxOk;
+    private SimpleFragmentPagerAdapter adapter;
+    private double latitude, longitude;
+    public static final String MyPREFERENCES = "MyPrefs";
+    private TabLayout tabLayout;
     private DrawerLayout mDrawerLayout;
+    private boolean isLocationSupported;
+    private APIInterface apiInterface;
+    private ArrayList<NeighborhoodListDataResponseData> allNeighborhoodDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        TextView title= (TextView) findViewById(R.id.toolbar_title);
+
+        apiInterface = APIClient.getClient().create(APIInterface.class);
+        getAllNeighborhoods();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        TextView title = findViewById(R.id.toolbar_title);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         ActionBar actionbar = getSupportActionBar();
@@ -98,309 +61,160 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);                                                    /* Add hamburger menu icon to action bar */
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
+        Intent intent = getIntent();
+        final ArrayList<Feeling> fl = intent.getParcelableArrayListExtra("feelings_list");
+        final ArrayList<Feeling> doingList = intent.getParcelableArrayListExtra("activity_list");
+        final ArrayList<Feeling> indoor = intent.getParcelableArrayListExtra("indoor_activities");
+        final ArrayList<Feeling> outdoor = intent.getParcelableArrayListExtra("outdoor_activities");
+        final ArrayList<FeelingFeedback> ffList = intent.getParcelableArrayListExtra("feeling_feedback_list");
+        final ArrayList<FeelingFeedback> dfList = intent.getParcelableArrayListExtra("doing_feedback_list");
+        final ArrayList<String> tipSymName = intent.getStringArrayListExtra("tip_symptom_list");
+        final ArrayList<String> tipImgList = intent.getStringArrayListExtra("tip_img_list");
+        final ArrayList<MetaData> annotations = intent.getParcelableArrayListExtra("activity_annotations");
+
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String locationSupported = sharedpreferences.getString("isLocationSupported", "");
         String rText;
-        if(isLocationSupported) {
+        if (locationSupported.equalsIgnoreCase("true")) {
             rText = sharedpreferences.getString("neighborhood", "");                           /* Get the current location from sharedPreferences and set it as the title */
+            isLocationSupported = true;
+        } else {
+            isLocationSupported = false;
+            rText = getString(R.string.stumptown_mactivity);
         }
-        else
-            rText=getString(R.string.stumptown_mactivity);
-        latitude=Float.parseFloat(sharedpreferences.getString("latitude",""));
-        longitude=Float.parseFloat(sharedpreferences.getString("longitude",""));
-        title.setText(rText);
 
-        coordinatesFeeling=new ArrayList<>();
-        curSymptomPosition=2;
-
-
-
-        infoBox=findViewById(R.id.info_box);
-        crsBtn=findViewById(R.id.cross_btn);
-        infoBox.setVisibility(View.GONE);
-        crsBtn.setVisibility(View.GONE);
-        crsBtn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-
-                infoBox.setVisibility(View.GONE);
-                crsBtn.setVisibility(View.GONE);
-
-            }
-        });
-        Intent myIntent = getIntent(); // gets the previously created intent
-        if(!myIntent.getStringExtra("isLocationSupported").equalsIgnoreCase("false")){
-            isLocationSupported=false;
-            hasDialogBoxOpened=true;
-            new AlertDialog.Builder(this,R.style.MyDialogTheme)
-                    .setMessage(R.string.too_far_away_dialog)
-                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+        if (!isLocationSupported) {
+            new AlertDialog.Builder(MainActivity.this, R.style.MyDialogTheme)
+                    .setMessage(R.string.too_far_away_dialog)                          /* If user is not in supported neighbourhood, give them option to check the supported neighbourhood */
+                    .setPositiveButton(R.string.okay_dialog_box, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            dialogBoxOk=true;
-                            setTitle("Portland");
-                            LatLng home = new LatLng(45.5190,-122.5180);
-                            float zoom=11;
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, zoom));
-                            getFeelings(3);
-                            Log.d("MainActivity", "Clicked okay");
+                            dialogBoxOk = true;
+                            latitude = 45.52;
+                            longitude = -122.57;
+                            isLocationSupported = true;
+                            NonSwipeableViewPager viewPager = findViewById(R.id.viewpager);
+
+                            // Create an adapter that knows which fragment should be shown on each page
+                            adapter = new SimpleFragmentPagerAdapter(getSupportFragmentManager(),MainActivity.this,  latitude,longitude, isLocationSupported, dialogBoxOk, fl, doingList, indoor,  outdoor, ffList, dfList, tipImgList, tipSymName, annotations, allNeighborhoodDetails);
+
+                            // Set the adapter onto the view pager
+                            viewPager.setAdapter(adapter);
+
+                            // Give the TabLayout the ViewPager
+                            tabLayout =  findViewById(R.id.tab_lyt);
+                            tabLayout.setupWithViewPager(viewPager);
+
+                            setCustomFont();
                         }
                     })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            dialogBoxOk=false;
-                            Log.d("MainActivity", "Aborting mission...");
+                            dialogBoxOk = false;
+                            latitude = Float.parseFloat(sharedpreferences.getString("latitude", ""));
+                            longitude = Float.parseFloat(sharedpreferences.getString("longitude", ""));
+                            NonSwipeableViewPager viewPager = findViewById(R.id.viewpager);
+
+                            // Create an adapter that knows which fragment should be shown on each page
+                            adapter = new SimpleFragmentPagerAdapter(getSupportFragmentManager(),MainActivity.this,  latitude,longitude, isLocationSupported, dialogBoxOk, fl, doingList, indoor,  outdoor, ffList, dfList, tipImgList, tipSymName, annotations, allNeighborhoodDetails);
+
+                            // Set the adapter onto the view pager
+                            viewPager.setAdapter(adapter);
+
+                            // Give the TabLayout the ViewPager
+                            tabLayout =  findViewById(R.id.tab_lyt);
+                            tabLayout.setupWithViewPager(viewPager);
+
+                            setCustomFont();
                         }
                     })
                     .show();
         }
-//        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        else {
 
-        recyclerView=(RecyclerView)findViewById(R.id.my_recycler_view) ;
-        recyclerView.setHasFixedSize(true);
-//        recyclerView.setVisibility(View.VISIBLE);
+            latitude = Float.parseFloat(sharedpreferences.getString("latitude", ""));
+            longitude = Float.parseFloat(sharedpreferences.getString("longitude", ""));
+            NonSwipeableViewPager viewPager = findViewById(R.id.viewpager);
 
-        rViewFeedback=findViewById(R.id.feeling_feedback);
+            // Create an adapter that knows which fragment should be shown on each page
+            adapter = new SimpleFragmentPagerAdapter(getSupportFragmentManager(),MainActivity.this,  latitude,longitude, isLocationSupported, dialogBoxOk, fl, doingList, indoor,  outdoor, ffList, dfList, tipImgList, tipSymName, annotations, allNeighborhoodDetails);
 
-        apiInterface = APIClient.getClient().create(APIInterface.class);
-        ffList=new ArrayList<>();
-        fl=new ArrayList<>();
+            // Set the adapter onto the view pager
+            viewPager.setAdapter(adapter);
 
-        populateFeelingsList();
+            // Give the TabLayout the ViewPager
+            tabLayout =  findViewById(R.id.tab_lyt);
+            tabLayout.setupWithViewPager(viewPager);
 
-        mAdapter = new FeelingAdapter(fl);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new MyDividerItemDecoration(this, LinearLayoutManager.VERTICAL, 16));
-        recyclerView.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
-        mAdapter.setOnItemClickListener((new FeelingAdapter.MyClickListener() {
-            @Override
-            public void onItemClick(int position, View v) {
-                Log.i("ItemClicked", " Clicked on Item " + position);
-                if(curSymptomPosition==position) {
-                    mAdapter.changeImage(position);
-                    mMap.clear();
-                }
-                else {
-                    curSymptomPosition = position;
-                    mAdapter.changeImage(position);
-                    mMap.clear();
-                    getFeelings(position + 1);
-                }
-//                getTip(position+1);
-               /*infoBox.setVisibility(View.VISIBLE);
-               crsBtn.setVisibility(View.VISIBLE);*/
-
-            }
-        }));
-
-        fAdapter=new FeelingFeedbackAdapter(ffList);
-        RecyclerView.LayoutManager fLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL, false);
-        rViewFeedback.setLayoutManager(fLayoutManager);
-//        rViewFeedback.getChildViewHolder().get
-        rViewFeedback.setAdapter(fAdapter);
-        fAdapter.notifyDataSetChanged();
-        fAdapter.setOnItemClickListener(new FeelingFeedbackAdapter.MyClickListener() {
-            @Override
-            public void onItemClick(int position, View v) {
-                fAdapter.increaseBadgeCount(position,badgeValues[position]);
-                badgeValues[position]++;
-            }
-        });
-
-//
-
-        secondFragment = new TwoFragment();
-
-
-        final SupportMapFragment mapFragment =  SupportMapFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.map, mapFragment).commit();
-        mapFragment.getMapAsync(this);
-        if (findViewById(R.id.map) != null) {
-
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            // Create a new Fragment to be placed in the activity layout
-            // Add the fragment to the 'fragment_container' FrameLayout
-           /* getSupportFragmentManager().beginTransaction()
-                    .add(R.id.map, firstFragment).commit();*/
+            setCustomFont();
         }
 
-
-        mSetDurationPresetRadioGroup = (PresetRadioGroup) findViewById(R.id.preset_time_radio_group);
-        mSetDurationPresetRadioGroup.setOnCheckedChangeListener(new PresetRadioGroup.OnCheckedChangeListener() {      /* Method to change fragments on pressing different tabs */
-            @Override
-            public void onCheckedChanged(View radioGroup, View radioButton, boolean isChecked, int checkedId) {
-                tabPressed=((PresetValueButton) radioButton).getValue();
-                if (tabPressed.equalsIgnoreCase(getString(R.string.tab_doing))) {
-                    if (isFirstFragment) {
-                        FragmentManager fragmentManager = getFragmentManager();
-                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-// Replace whatever is in the fragment_container view with this fragment,
-// and add the transaction to the back stack so the user can navigate back
-                        transaction.replace(R.id.map,secondFragment);
-                        transaction.addToBackStack(null);
-// Commit the transaction
-                        transaction.commit();
-                        isFirstFragment=false;
-                    }
-                }
-                else
-                if (tabPressed.equalsIgnoreCase(getString(R.string.tab_feeling))) {
-                    if (!isFirstFragment) {
-                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-// Replace whatever is in the fragment_container view with this fragment,
-// and add the transaction to the back stack so the user can navigate back
-                        transaction.replace(R.id.map, mapFragment);
-                        transaction.addToBackStack(null);
-
-// Commit the transaction
-                        transaction.commit();
-                        isFirstFragment=true;
-                    }
-                }
-            }
-        });
+        title.setText(rText);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                ImageButton crsBtn = findViewById(R.id.menu_closebtn);
+                crsBtn.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                            mDrawerLayout.closeDrawer(GravityCompat.START);
+                        }
+                    }
+                });
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void populateFeelingsList(){                     /* Method to fetch feeling images and names using the API and populate the feelings arraylist */
-        /*
-         GET List Resources
-         */
+    private void setCustomFont() {
+        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
+        int tabsCount = vg.getChildCount();
 
-        Call<MetaDataResponse> metadataResponse = apiInterface.metadata();
-        metadataResponse.enqueue(new Callback<MetaDataResponse>() {
-            @Override
-            public void onResponse(Call<MetaDataResponse> call, Response<MetaDataResponse> response) {
+        for (int j = 0; j < tabsCount; j++) {
+            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
 
+            int tabChildsCount = vgTab.getChildCount();
 
-                MetaDataResponse resource = response.body();
-//                TO DO: Add those values to arraylist of Feeling type that have key="feeling"
-                md=resource.getResponseData().getMetadata();
-                int len=md.size();
-                for(int i=0;i<len;i++){
-                    if(md.get(i).getKey().equalsIgnoreCase(getString(R.string.str_feeling))) {
-                        f = new Feeling(md.get(i).getImgUrl(), md.get(i).getName(), md.get(i).getImgSelUrl());
-                        fl.add(f);
-                    }
-                    else
-                        if(md.get(i).getKey().equalsIgnoreCase(getString(R.string.str_symptom))){
-                          ff = new FeelingFeedback(md.get(i).getImgUrl(),md.get(i).getName());
-                          ffList.add(ff);
-                        }
+            for (int i = 0; i < tabChildsCount; i++) {
+                View tabViewChild = vgTab.getChildAt(i);
+                if (tabViewChild instanceof TextView) {
+                    Typeface typeface = ResourcesCompat.getFont(getBaseContext(), R.font.klinic_slab_medium);
+                    ((TextView) tabViewChild).setTypeface(typeface,Typeface.NORMAL);
                 }
-                int flen=fl.size();
             }
-
-            @Override
-            public void onFailure(Call<MetaDataResponse> call, Throwable t) {
-                call.cancel();
-            }
-        });
-        }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        LatLng home=new LatLng(latitude, longitude);
-        float zoom=10;
-        if(!hasDialogBoxOpened) {
-            getFeelings(3);
-        }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, zoom));
-    }
-
-    public void getFeelings(final int position) {
-
-        if (isLocationSupported) {
-            if(!coordinatesData.isEmpty())
-                coordinatesData.clear();
-            if(!coordinatesFeeling.isEmpty())
-                coordinatesFeeling.clear();
-            Call<FeelingsData> feelingsResponse = apiInterface.feelings(String.valueOf(latitude), String.valueOf(longitude), position);
-            feelingsResponse.enqueue(new Callback<FeelingsData>() {
-                @Override
-                public void onResponse(Call<FeelingsData> call, Response<FeelingsData> response) {
-                    FeelingsData resource = response.body();
-                    if(resource!=null) {
-                        allFeelingsData = resource.getResponseData().getFeelings();
-                        if (allFeelingsData != null) {
-                            int alLen = allFeelingsData.size();
-                                for (int j = 0; j < allFeelingsData.get(position-1).getCoordinates().size(); j++) {
-                                    coordinatesData.add(allFeelingsData.get(position-1).getCoordinates().get(j));
-                                }
-
-
-
-
-                           for (int k = 0; k < coordinatesData.size(); k++) {
-                             double latitude=Float.parseFloat(coordinatesData.get(k).getLat());
-                             double longitude=Float.parseFloat(coordinatesData.get(k).getLon());
-                             coordinatesFeeling.add(new LatLng(latitude,longitude));
-                            }
-
-                            int[] colors = {
-                                    Color.argb(160,0,149,164)    /*.rgb(0, 149, 164), // blue*/
-                            };
-
-                            float[] startPoints = {
-                                    0.009f
-                            };
-
-                            Gradient gradient = new Gradient(colors, startPoints);
-
-// Create the tile provider.
-
-                            HeatmapTileProvider provider;
-                            provider = new HeatmapTileProvider.Builder().data(coordinatesFeeling).gradient(gradient).build();
-                            provider.setRadius(30);
-                            // Add a tile overlay to the map, using the heat map tile provider.
-                            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(provider));
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<FeelingsData> call, Throwable t) {
-                    call.cancel();
-                }
-            });
         }
     }
 
-/*    public void getTip(int feelingId){
-        Call<FeelingTips> TipResponse=apiInterface.feelingTips(feelingId);
-        TipResponse.enqueue(new Callback<FeelingTips>() {
+    public void setNeighborhood(String nhood){
+        TextView title = findViewById(R.id.toolbar_title);
+        if(nhood!=null)
+        title.setText(nhood);
+    }
+
+    public void getAllNeighborhoods()
+    {
+        allNeighborhoodDetails = new ArrayList<>();
+        Call<NeighborhoodListData> metadataResponse = apiInterface.neighborhood_list();
+        metadataResponse.enqueue(new Callback<NeighborhoodListData>() {
             @Override
-            public void onResponse(Call<FeelingTips> call, Response<FeelingTips> response) {
-                FeelingTips resource=response.body();
-                tip=resource.getResponseData().getTips().get(0);
+            public void onResponse(Call<NeighborhoodListData> call, Response<NeighborhoodListData> response) {
+                NeighborhoodListData resource = response.body();
+                for(int i=0;i<resource.getResponseData().size();i++)
+                    allNeighborhoodDetails.add(resource.getResponseData().get(i));
             }
 
             @Override
-            public void onFailure(Call<FeelingTips> call, Throwable t) {
+            public void onFailure(Call<NeighborhoodListData> call, Throwable t) {
                 call.cancel();
             }
         });
-    }*/
+    }
 }

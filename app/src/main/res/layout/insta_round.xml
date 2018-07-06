@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:orientation="horizontal">
+    <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="40dp"
+        android:id="@+id/insta"
+        android:paddingTop="8dp"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:background="@mipmap/instanew_icn_round" />
+    <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="40dp"
+        android:layout_marginLeft="5dp"
+        android:paddingTop="8dp"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:background="@mipmap/twitter_icn_round" />
+</LinearLayout>
